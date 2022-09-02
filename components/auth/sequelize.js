@@ -1,60 +1,42 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const express = require('express');
+const db = require("../../models");
 
-const sequelize = new Sequelize('postgres://postgres:postgres@127.0.0.1:5433/poilabs');
+// Assign db.users to User Variable
+const User = db.users;
 
-try {
-  sequelize.authenticate();
-  console.log('Connection has been established successfully.');
-} catch (error) {
-  console.error('Unable to connect to the database:', error);
+// Function to check if username or email already exist in db.
+// this is for avoiding having two users with the same username and email
+const saveUser = async (req, res, next) => {
+    // search db with findOne (or findAll) to see if user exist
+    try {
+        const username = await User.findOne({
+            where: {
+                username : req.body.username,
+            }
+        });
+        // if username exist in db responds with a status of 409
+        if (username) {
+            return res.json(409).send("username already taken")
+        }
+
+        // checking if email already exist
+        const emailcheck = await User.findOne({
+            where: {
+                email: req.body.email, 
+            }
+        });
+
+        // same as username, if email exist in db responds with a status code of 409
+        if (emailcheck) {
+            return res.json(409).send("Authentication failed.");
+        }
+        next();  // It passes control to the next matching route.
+
+    } catch (error) {
+        console.log(error);
+    }
 };
 
-const User = sequelize.define('User',{
-    id : {
-      type: DataTypes.INTEGER,
-      primaryKey : true,
-      autoIncrement: true  
-    },
-    username: {
-        type : DataTypes.STRING,
-        allowNull : false,
-        unique : true
-        // primaryKey : true 
-    },
-    password: {
-        type : DataTypes.STRING,
-        allowNull : false
-    },
-    email: {
-        type : DataTypes.STRING,
-        allowNull : false,
-        unique : true
-        // primaryKey : true
-    }
-});
-
-
-console.log(User === sequelize.models.User); // true
-
-User.sync()
-
-AddUser("MelihCelik00", "1234", "melihsafa.c1@gmail.com");
-AddUser("melihcelik00", "123456", "melihsafa.c2@gmail.com");
-AddUser("MelihCelik00", "123456789", "melihsafa.c3@gmail.com");
-AddUser("FarklıUserAynıMail", "sifre123", "melihsafa.c@gmail.com");
-AddUser("FarklıUserAynıMail2", "sifre123", "melihsafa.c1@gmail.com");
-
-
-async function AddUser(_username, _password, _email){
-
-    await User.create({
-        username: _username,
-        password:_password,
-        email: _email 
-    });
-    await User.sync()
-}; 
-
 module.exports = {
-    AddUser,
+    saveUser,
 }
