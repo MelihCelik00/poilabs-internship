@@ -1,9 +1,16 @@
-var express = require('express');
-var router = express.Router();
+// importing modules
+const express = require("express");
+const userController = require("../components/auth/controller");
+const { signup, login } = userController;
+const userAuth = require("../components/auth/sequelize");
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const router = express.Router();
+
+// signup endpoint
+// passing the middleware to the signup
+router.post('/signup', userAuth.saveUser, signup);
+
+// login route
+router.post('/login', login);
 
 module.exports = router;
