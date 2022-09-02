@@ -1,12 +1,21 @@
 var createError = require('http-errors');
-var express = require('express');
+const express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const sequelize = require('sequelize');
+const dotenv = require('dotenv').config();
+const db = require('./models')
+
+
+/* const express = require('express');
+const cookieParser = require('cookie-parser')
+const userRoutes = require('../routes/users') */
 
 // get router methods with require
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const userRoutes = require('./routes/users');
+
 
 var app = express();
 
@@ -20,8 +29,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//synchronizing the database and forcing it to false so we dont lose data
+// db.sequelize.sync({ force: true }).then( () => {
+//     console.log("db has been re sync!");
+// })
+
+// routes for the user API
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use('/users', usersRouter);
+app.use('/api/users', userRoutes)
+
+// app.listen(PORT, () => console.log(`Server is connected on ${PORT}`))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
