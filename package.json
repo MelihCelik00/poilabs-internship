@@ -7,6 +7,7 @@
     "testdb": "node ./components/sequelize.js"
   },
   "dependencies": {
+    "basic-auth-token": "^0.4.2",
     "bcrypt": "^5.0.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",

@@ -2,7 +2,7 @@
 const express = require("express");
 const userController = require("../components/auth/controller");
 const { signup, login } = userController;
-const userAuth = require("../components/auth/sequelize");
+const userAuth = require("../components/auth/userAuth");
 
 const router = express.Router();
 
