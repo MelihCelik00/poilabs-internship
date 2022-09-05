@@ -3,14 +3,13 @@ const express = require('express');
 var path = require('path');
 const cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const sequelize = require('sequelize');
-const dotenv = require('dotenv').config();
-const db = require('./models');
+// const sequelize = require('sequelize');
+// const dotenv = require('dotenv').config();
+// const db = require('./models');
 
 const bodyParser = require("body-parser");
-const redis = require("redis");
 
-
+const redis = require("./components/redis");
 
 /* const express = require('express');
 const cookieParser = require('cookie-parser')
@@ -43,19 +42,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 // })
 
 
-const REDIS_PORT = process.env.REDIS_PORT;
-
-const redisClient = redis.createClient({
-  //url: 'redis://localhost:6379'
-});
-
-redisClient.on("error", (err) => {
-    console.log("Could not establish a connection with redis!");
-});
-redisClient.on("connect", (err) => {
-    console.log("Connected to redis successfully!!!");
-});
-
 app.use(bodyParser.urlencoded({
     extended: true,
 }));
@@ -86,3 +72,4 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
