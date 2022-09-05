@@ -41,6 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //     console.log("db has been re sync!");
 // })
 
+
 app.use(bodyParser.urlencoded({
     extended: true,
 }));
