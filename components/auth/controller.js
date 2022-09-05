@@ -65,7 +65,7 @@ const login = async (req, res) => {
                 let token = jwt.sign({id: user.id}, process.env.secretKey, {
                     expiresIn: 1 * 24 * 60 * 60 * 1000,
                 });
-                res.status(201).send("login successful with: ", email, password)
+                res.status(201).send(`login successful with ${email} and ${password}`)
                 //if password matches wit the one in the database
                 //go ahead and generate a cookie for the user
                 res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
