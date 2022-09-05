@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const REDIS_PORT = process.env.REDIS_PORT;
 
 const redisClient = redis.createClient({
-  url: 'redis://localhost:6379'
+  //url: 'redis://localhost:6379'
 });
 
 redisClient.on("error", (err) => {
