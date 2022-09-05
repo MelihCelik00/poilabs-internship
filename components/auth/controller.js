@@ -6,6 +6,8 @@ const db = require("../../models");
 const jwt = require("jsonwebtoken");
 const { log } = require("console");
 
+const auth = require("basic-auth")
+
 // assigning user to the variable User
 const User = db.users;
 
@@ -48,16 +50,18 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
-
+        // const { email, password } = req.body;
+        let userAuth = auth(req);  // => { name: 'something', pass: 'whatever' }
+        // console.log(userAuth);  // Credentials { name: 'testmail1@testmail.com', pass: 'pwd1' }
+        
         // find a user by their email
         const user = await User.findOne({
-            where: {email: email}
+            where: {email: userAuth.name}
         });
 
         // if user email is found, compare password with bycrypt
         if (user) {
-            const isSame = await bcrypt.compare(password, user.password);
+            const isSame = await bcrypt.compare(userAuth.pass, user.password);
             
             // if password is same
             // generate a token with the user's id and the secretKey in the env file
@@ -65,7 +69,7 @@ const login = async (req, res) => {
                 let token = jwt.sign({id: user.id}, process.env.secretKey, {
                     expiresIn: 1 * 24 * 60 * 60 * 1000,
                 });
-                res.status(201).send(`login successful with ${email} and ${password}`)
+                res.status(201).send(`login successful with ${userAuth.name} and ${userAuth.pass}`);
                 //if password matches wit the one in the database
                 //go ahead and generate a cookie for the user
                 res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
