@@ -3,12 +3,13 @@ const express = require('express');
 var path = require('path');
 const cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const sequelize = require('sequelize');
-const dotenv = require('dotenv').config();
-const db = require('./models');
+// const sequelize = require('sequelize');
+// const dotenv = require('dotenv').config();
+// const db = require('./models');
 
 const bodyParser = require("body-parser");
-const redis = require("redis");
+
+const redis = require("./components/redis");
 
 /* const express = require('express');
 const cookieParser = require('cookie-parser')
@@ -40,29 +41,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 //     console.log("db has been re sync!");
 // })
 
-const REDIS_PORT = process.env.REDIS_PORT;
-
-// default format of createClient() should have connect to localhost on port 6379 
-// const redisClient = redis.createClient();
-const redisClient = redis.createClient({
-  host: "127.0.0.1",
-  port: 6379,
-  //url: 'redis://localhost:6379'
-});
-
-(async () => {
-  await redisClient.connect(); // connect is a async function.
-})();
-console.log(redisClient.isOpen);  // even is open returns true there is a error
-
-redisClient.on("error", (err) => {
-    console.log("Could not establish a connection with redis!");
-    console.log(err);
-});
-redisClient.on("connect", (err) => {
-    console.log("Connected to redis successfully!!!");
-});
-
 app.use(bodyParser.urlencoded({
     extended: true,
 }));
@@ -93,3 +71,4 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
