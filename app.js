@@ -55,14 +55,10 @@ redisClient.on("connect", (err) => {
     console.log("Connected to redis successfully!!!");
 });
 
-
 app.use(bodyParser.urlencoded({
     extended: true,
 }));
-
 app.use(bodyParser.json());
-
-
 
 
 // routes for the user API
