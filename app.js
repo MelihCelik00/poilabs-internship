@@ -42,10 +42,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 //     console.log("db has been re sync!");
 // })
 
+
 const REDIS_PORT = process.env.REDIS_PORT;
 
 const redisClient = redis.createClient({
-  url: 'redis://localhost:6379'
+  //url: 'redis://localhost:6379'
 });
 
 redisClient.on("error", (err) => {
