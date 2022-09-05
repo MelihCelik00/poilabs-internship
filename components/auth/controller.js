@@ -6,7 +6,8 @@ const db = require("../../models");
 const jwt = require("jsonwebtoken");
 const { log } = require("console");
 
-const auth = require("basic-auth")
+const auth = require("basic-auth");
+
 
 // assigning user to the variable User
 const User = db.users;
