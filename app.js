@@ -32,9 +32,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-// routes for the user API
 app.use('/', indexRouter);
-// app.use('/users', usersRouter);
 app.use('/api/users', userRoutes)
 
 // app.listen(PORT, () => console.log(`Server is connected on ${PORT}`))
