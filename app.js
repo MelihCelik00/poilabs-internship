@@ -9,10 +9,14 @@ const bodyParser = require("body-parser");
 // get router methods with require
 const indexRouter = require('./routes/index');
 const userRoutes = require('./routes/users');
+const serviceRouter = require('./routes/testService');
+const tokenAuthMiddleware = require('./middlewares/tokenAuth')
+const { tokenAuth } = tokenAuthMiddleware;
+
 
 var app = express();
 
-const cors = require("cors")
+const cors = require("cors");
 
 app.use(cors());
 
@@ -32,7 +36,8 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.use('/', indexRouter);
-app.use('/api/users', userRoutes)
+app.use('/api/users', userRoutes);
+app.use('/api/services', tokenAuth, serviceRouter);
 
 // app.listen(PORT, () => console.log(`Server is connected on ${PORT}`))
 

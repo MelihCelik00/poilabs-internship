@@ -5,10 +5,11 @@ var createError = require('http-errors');
 const bcrypt = require("bcrypt");
 const db = require("../../models");
 const jwt = require("jsonwebtoken");
-
+const dotenv = require("dotenv").config();
 const auth = require("basic-auth");
 
 const redisClient = require("../redis");
+let expireTime = 60 * 10;  // 10 min by default but can be changed while logging user in
 
 // assigning user to the variable User
 const User = db.users;
@@ -43,7 +44,7 @@ const signup = async (req, res) => {
 // login authentication
 const login = async (req, res) => {
     try {
-        let userAuth = auth(req);  // => { name: 'something', pass: 'whatever' }  // previously -> const { email, password } = req.body;
+        let userAuth = auth(req);  // returns => { name: 'something', pass: 'whatever' }  // previously -> const { email, password } = req.body;
         // console.log(userAuth);  // Credentials { name: 'testmail1@testmail.com', pass: 'pwd1' }
         
         // find a user by their email
@@ -57,18 +58,21 @@ const login = async (req, res) => {
             const isSame = await bcrypt.compare(userAuth.pass, user.password);
             
             if (isSame) {
-                let token = jwt.sign({id: user.id}, process.env.secretKey, {  // if password is same generate a token with the user's id and the secretKey in the env file
-                    expiresIn: 1 * 24 * 60 * 60 * 1000,
+                let accessToken = jwt.sign({ uid: user.id}, process.env.secretKey, {  // if password is same generate a token with the user's id and the secretKey in the env file
+                    expiresIn: expireTime, // can be changed at the top of the code // 1 * 24 * 60 * 60 * 1000,
                 });                
 
-                let {username, password, email, createdAt, updatedAt, ...rest} = user.dataValues;
+                let {password, createdAt, updatedAt, ...rest} = user.dataValues;
                 user.dataValues = rest;
-                user.dataValues.token = token;  // add token as new attribute 
-
+                user.dataValues.token = accessToken;  // add token as new attribute 
+                
                 // In redis, save token and id in two-way. This simplifies process of tracking the user.
-                redisClient.set(token, `${user.dataValues.id}`);
-                redisClient.set(`${user.dataValues.id}`, token); // key only can be string.
-                // send user data
+                redisClient.set(accessToken, `${user.dataValues.id}`);
+                redisClient.set(`${user.dataValues.id}`, JSON.stringify({
+                            accessToken : accessToken,
+                            expires : expireTime
+                    })); // key only can be string.
+                
                 return res.status(200).json(user.dataValues);  // Standard response for successful HTTP request with json response
             } else {
                 return res.status(401).json(createError.Unauthorized());
@@ -81,8 +85,28 @@ const login = async (req, res) => {
     }
 };
 
+const logout = async (req, res, next) => {
+    try {
+        let userAuth = auth(req);
+        const user = await User.findOne({
+            where: {email: userAuth.name},
+            attributes: ["id"],
+        });
+        redisClient.get(user.id, function(err, reply) {
+            let replyJSON  = JSON.parse(reply);
+            redisClient.del(replyJSON.accessToken);
+          });
+        redisClient.del(user.id);
+        return res.status(200);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
 // Export auth modules.
 module.exports = {
     signup,
     login,
+    logout,
 };
