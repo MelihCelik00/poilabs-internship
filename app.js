@@ -31,7 +31,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-
 // routes for the user API
 app.use('/', indexRouter);
 // app.use('/users', usersRouter);
