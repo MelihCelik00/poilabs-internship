@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const db = require("../../models");
 const jwt = require("jsonwebtoken");
 
+
 const auth = require("basic-auth");
 
 const redisClient = require("../redis");
@@ -32,6 +33,7 @@ const signup = async (req, res) => {
                 expiresIn: 1 * 24 * 60 * 60 * 1000,
             });
             return res.status(200).json(user);  // send user details
+
         }else{
             return res.status(406).json(createError.BadRequest());
         }
@@ -70,6 +72,7 @@ const login = async (req, res) => {
                 redisClient.set(`${user.dataValues.id}`, token); // key only can be string.
                 // send user data
                 return res.status(200).json(user.dataValues);  // Standard response for successful HTTP request with json response
+
             } else {
                 return res.status(401).json(createError.Unauthorized());
             }

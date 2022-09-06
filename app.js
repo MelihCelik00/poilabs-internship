@@ -6,6 +6,11 @@ var logger = require('morgan');
 
 const bodyParser = require("body-parser");
 
+
+const bodyParser = require("body-parser");
+
+const redis = require("./components/redis");
+
 // get router methods with require
 const indexRouter = require('./routes/index');
 const userRoutes = require('./routes/users');
