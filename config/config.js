@@ -1,6 +1,6 @@
 module.exports = {
   "development": {
-    "url":"postgres://postgres:postgres@127.0.0.1:5432/poilabs",
+    "url":process.env.DEV_DATABASE_URL,
     "dialect": "postgres",    
   },
   "test": {
