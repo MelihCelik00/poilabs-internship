@@ -3,23 +3,13 @@ const express = require('express');
 var path = require('path');
 const cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const sequelize = require('sequelize');
-const dotenv = require('dotenv').config();
-const db = require('./models');
 
 const bodyParser = require("body-parser");
 const redis = require("redis");
 
-
-
-/* const express = require('express');
-const cookieParser = require('cookie-parser')
-const userRoutes = require('../routes/users') */
-
 // get router methods with require
 const indexRouter = require('./routes/index');
 const userRoutes = require('./routes/users');
-
 
 var app = express();
 
@@ -37,30 +27,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//synchronizing the database and forcing it to false so we dont lose data
-// db.sequelize.sync({ force: true }).then( () => {
-//     console.log("db has been re sync!");
-// })
-
-
-const REDIS_PORT = process.env.REDIS_PORT;
-
-const redisClient = redis.createClient({
-  //url: 'redis://localhost:6379'
-});
-
-redisClient.on("error", (err) => {
-    console.log("Could not establish a connection with redis!");
-});
-redisClient.on("connect", (err) => {
-    console.log("Connected to redis successfully!!!");
-});
-
 app.use(bodyParser.urlencoded({
     extended: true,
 }));
 app.use(bodyParser.json());
-
 
 // routes for the user API
 app.use('/', indexRouter);
