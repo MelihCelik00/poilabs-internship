@@ -1,13 +1,18 @@
 // this script contains signup and login methods which are the two main functions
 
 // import modules
+var createError = require('http-errors');
 const bcrypt = require("bcrypt");
 const db = require("../../models");
 const jwt = require("jsonwebtoken");
-const { log } = require("console");
+const dotenv = require("dotenv").config();
+const _ = require("lodash")
+
 
 const auth = require("basic-auth");
 
+const redisClient = require("../redis");
+const { password, user } = require('pg/lib/defaults');
 
 // assigning user to the variable User
 const User = db.users;
@@ -32,15 +37,15 @@ const signup = async (req, res) => {
             let token = jwt.sign({ id:user.id }, process.env.secretKey, {
                 expiresIn: 1 * 24 * 60 * 60 * 1000,
             });
-
-            res.cookie("jwt", token, {maxAge: 1 * 24 * 60 * 60, httpOnly: true});
+            console.log();
+            // res.cookie("jwt", token, {maxAge: 1 * 24 * 60 * 60, httpOnly: true});
             console.log("user", JSON.stringify(user, null, 2));
             console.log(token);
 
             // send user details
-            return res.status(201).send(user);
+            return res.status(200).json(user);
         }else{
-            return res.status(409).send("Details are not correct!");
+            return res.status(406).json(createError.BadRequest());
         }
     } catch (error) {
         console.log(error);
@@ -57,7 +62,8 @@ const login = async (req, res) => {
         
         // find a user by their email
         const user = await User.findOne({
-            where: {email: userAuth.name}
+            where: {email: userAuth.name},
+            attributes: ["id","username","password","email"],
         });
 
         // if user email is found, compare password with bycrypt
@@ -70,20 +76,35 @@ const login = async (req, res) => {
                 let token = jwt.sign({id: user.id}, process.env.secretKey, {
                     expiresIn: 1 * 24 * 60 * 60 * 1000,
                 });
-                res.status(201).send(`login successful with ${userAuth.name} and ${userAuth.pass}`);
+                // console.log(redisClient.isOpen);  // THROWS TYPE ERROR: CANNOT READ PROPERTY "isOpen"...
+                // res.status(201).send(`login successful with ${userAuth.name} and ${userAuth.pass}`);
+                
                 //if password matches wit the one in the database
                 //go ahead and generate a cookie for the user
-                res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
-                console.log("user", JSON.stringify(user, null, 2));
-                console.log(token);
-                res.JSON({ token });
+                // res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
+                // console.log("user", JSON.stringify(user, null, 2));
+                console.log("TOKEN:: ", token);
+                let {username, password, email, createdAt, updatedAt, ...rest} = user.dataValues;
+                user.dataValues = rest;
+                // delete user.dataValues.password;
+                // delete user.dataValues.createdAt;
+                // delete user.dataValues.updatedAt;
+                // delete user.dataValues.username;
+                // delete user.dataValues.email;
+                user.dataValues.token = token;
+
+                // res.JSON({ token });
                 // send user data
-                return res.status(201).send(user);
+                console.log("USER", user);
+                redisClient.set(token, user.dataValues.id);
+                redisClient.set(`${user.dataValues.id}`, token);
+
+                return res.status(200).json(user.dataValues);
             } else {
-                return res.status(401).send("Authentication failed");
+                return res.status(401).json(createError.Unauthorized());
             }
         } else {
-            return res.status(401).send("Authentication failed");
+            return res.status(401).json(createError.Unauthorized());
         }
     } catch (error) {
         console.log(error);
