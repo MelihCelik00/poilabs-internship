@@ -58,7 +58,7 @@ const login = async (req, res) => {
             
             if (isSame) {
                 let accessToken = jwt.sign({ uid: user.id}, process.env.secretKey, {  // if password is same generate a token with the user's id and the secretKey in the env file
-                    expiresIn: expireTime, // can be changed at the top of the code // 1 * 24 * 60 * 60 * 1000,
+                    expiresIn: 60 * 10, // be aware to change it below too (in redis client section)! 
                 });                
                 let {password, createdAt, updatedAt, ...rest} = user.dataValues;
                 user.dataValues = rest;
