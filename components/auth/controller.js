@@ -63,7 +63,7 @@ const login = async (req, res) => {
                 let {password, createdAt, updatedAt, ...rest} = user.dataValues;
                 user.dataValues = rest;
                 user.dataValues["x-access-token"] = accessToken;  // add token as new attribute 
-                
+
                 redisClient.set(accessToken, `${user.dataValues.id}`);  // In redis, save token and id in two-way. This simplifies process of tracking the user.
                 redisClient.set(`${user.dataValues.id}`, JSON.stringify({
                             "x-access-token" : accessToken,
