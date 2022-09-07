@@ -5,12 +5,7 @@ var createError = require('http-errors');
 const bcrypt = require("bcrypt");
 const db = require("../../models");
 const jwt = require("jsonwebtoken");
-<<<<<<< HEAD
-
-
-=======
 const dotenv = require("dotenv").config();
->>>>>>> development
 const auth = require("basic-auth");
 
 const redisClient = require("../redis");
