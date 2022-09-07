@@ -15,10 +15,12 @@ const tokenAuth = async (req, res, next) => {
         TODO:
             Implement redis tokens-user token comparison and validation
             If user log in from different source, disable the auth of older token
-       **/ 
-    if (token) {
+            **/ 
+    const getIdFromToken = await redisClient.get(token);
+    if (token && getIdFromToken) {
         
-        const getIdFromToken = await redisClient.get(token);
+
+        console.log("?????????????????????????????????")
         console.log(getIdFromToken);
         const getTokenFromId = await redisClient.get(getIdFromToken)
         let parsedRedisTokenValue =  JSON.parse(getTokenFromId)
