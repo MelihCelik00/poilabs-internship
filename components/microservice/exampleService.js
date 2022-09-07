@@ -1,6 +1,6 @@
 const exService = (req, res, next) => {
     try {
-        res.status(200).send(`login successful for user ${req.headers["id"]}!`)
+        res.status(200).send(`login successful for this user!`)
         next();
     } catch (error) {
         console.log(error);
