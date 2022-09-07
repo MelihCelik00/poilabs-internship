@@ -6,19 +6,25 @@ Controls the data from redis and due to token expiration time, authenticates the
 const redisClient = require("../components/redis");
 const config = require("../config/config")
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 
 const tokenAuth = (req, res, next) => {
     /* We need req headers for a access to token */
-    console.log(req.headers["x-access-token"]);  // test
-    res.status(200).json(req)  // test
+    console.log("x-access-token: ", req.headers["x-access-token"]);  // returns token
+    console.log("USER ID: ", req.headers.id); // returns user id
+
+    let token = req.headers["x-access-token"];
+      // test
     if (token) {
-        jwt.verify(token, config.secret, function(err, decoded) {
+        jwt.verify(token, process.env.secretKey, function(err, decoded) {
             if (err) {
-                return res.status(401).json({ "error": true, "message": 'Unauthorized access.' });
+                console.log("ERR::: ", err);
+                return res.status(401).json({ "error": true, "message": 'Unauthorized access.', "err": err });
+            }else{
+                req.decoded = decoded;
+                next();
+                return res.status(200).send("successful!!!").next();
             }
-            req.decoded = decoded;
-            next();
-            return res.status(200);
         });
     } else {
         return res.status(403).send({
