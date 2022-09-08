@@ -4,6 +4,9 @@ var path = require('path');
 const cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSdoc = require('swagger-jsdoc')
+
 const bodyParser = require("body-parser");
 
 // get router methods with require
@@ -12,7 +15,6 @@ const userRoutes = require('./routes/users');
 const serviceRouter = require('./routes/testService');
 const tokenAuthMiddleware = require('./middlewares/tokenAuth')
 const { tokenAuth } = tokenAuthMiddleware;
-
 
 var app = express();
 
@@ -35,9 +37,45 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+const options = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Node JS API Project for Express',
+            version: '1.0.0'
+        },
+        servers: [
+            {
+              url: 'http://localhost:3000/'    
+            }
+        ]
+    },
+    apis: [`${__dirname}/routes/users.js`]
+};
+
+const swaggerAuthOptions = {
+	swaggerOptions: {
+		basicAuth: {
+			name: "Authorization",
+			schema: {
+				type: 'basic',
+				in: 'header'
+			},
+			value: 'Basic <user:password>'
+		}
+	}
+}
+const swaggerSpec = swaggerJSdoc(options);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerAuthOptions));
+
+
 app.use('/', indexRouter);
 app.use('/api/users', userRoutes);
 app.use('/api/services', tokenAuth, serviceRouter);
+
+
+
+
 
 // app.listen(PORT, () => console.log(`Server is connected on ${PORT}`))
 
