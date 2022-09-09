@@ -74,9 +74,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/services', tokenAuth, serviceRouter);
 
 
-
-
-
 // app.listen(PORT, () => console.log(`Server is connected on ${PORT}`))
 
 // catch 404 and forward to error handler
