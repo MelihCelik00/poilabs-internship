@@ -167,24 +167,15 @@ paths:
       summary: "Example get CRUD service"
       parameters:
         - in: header
+          type: apiKey
           name: x-access-token
-          description: "x-access-token"
+          description: "x-access-token in header"
           required: true
           schema:
             type: string
-            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTY2Mjk2NzgyMCwiZXhwIjoxNjYyOTY4NDIwfQ.QB3zKywKoUKjlQ4c1jN1IDyfzc2wUDsvRI6nMkTTRXs"
+            example: ApiKeyAuth
       tags: [Microservices]
-      # properties:
-      #   x-access-token:
-      #     type: string
-      #     description: "User Auth Token"
-      # example:
-      #   x-access-token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTY2Mjk2NzgyMCwiZXhwIjoxNjYyOTY4NDIwfQ.QB3zKywKoUKjlQ4c1jN1IDyfzc2wUDsvRI6nMkTTRXs"
-      # requestHeader:
-      #   content:
-      #     application/json:
-      #       schema:
-      #         $ref: '#/components/schemas/GetService'
+     
       security:
         - ApiKeyAuth: []
       responses:
