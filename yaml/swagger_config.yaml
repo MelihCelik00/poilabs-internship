@@ -17,7 +17,7 @@ components:
     Microservices:
       description: "Microservice to test middleware"
   securitySchemes:
-    BasicAuth:
+    basicAuth:
       type: http
       scheme: basic
     ApiKeyAuth:
@@ -25,7 +25,7 @@ components:
       in: header
       name: x-API-KEY
   
-  schemes:
+  schemas:
     User:
       type: "object"
       required:
@@ -76,9 +76,9 @@ components:
           type: string
           description: "Signed email of user"
       example:
-        username: testuser1
-        password: pwd1
-        email: testuser1@testmail.com
+        username: "testuser1"
+        password: "pwd1"
+        email: "testuser1@testmail.com"
 
     UserLogin:
       type: "object"
@@ -95,24 +95,26 @@ components:
           type: string
           description: "User password"
       example:
-        email: testmail1@testmail.com
-        password: pwd1
+        email: "testmail1@testmail.com"
+        password: "pwd1"
 
     GetService:
       type: "object"
       required:
         - x-access-token
       security:
-        basicAuth: []
+        - basicAuth: []
       properties:
         x-access-token:
           type: string
           description: "User Auth Token"
       example:
         x-access-token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTY2Mjk2NzgyMCwiZXhwIjoxNjYyOTY4NDIwfQ.QB3zKywKoUKjlQ4c1jN1IDyfzc2wUDsvRI6nMkTTRXs"
+
 security:
-  basicAuth: []
-  ApiKeyAuth: []
+  - basicAuth: []
+  - ApiKeyAuth: []
+
 #------------------------------------
 paths:
   /api/users/signup:
@@ -124,7 +126,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemes/UserSignup'
+              $ref: '#/components/schemas/UserSignup'
 
       responses:
         '200':
@@ -132,7 +134,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemes/UserSignup'
+                $ref: '#/components/schemas/UserSignup'
         '500':
           description: "Some server error"
 #------------------------------------
@@ -148,7 +150,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemes/UserLogin'
+              $ref: '#/components/schemas/UserLogin'
 
       responses:
         '200':
@@ -156,7 +158,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemes/UserLogin'
+                $ref: '#/components/schemas/UserLogin'
         '500':
           description: "Some server error"
 #------------------------------------
@@ -175,7 +177,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemes/GetService'
+              $ref: '#/components/schemas/GetService'
       responses:
         '200':
           description: "Successful operation"
