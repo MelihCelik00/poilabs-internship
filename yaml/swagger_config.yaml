@@ -23,7 +23,7 @@ components:
     ApiKeyAuth:
       type: apiKey
       in: header
-      name: x-API-KEY
+      name: x-access-token
   
   schemas:
     User:
@@ -103,7 +103,7 @@ components:
       required:
         - x-access-token
       security:
-        - basicAuth: []
+        - ApiKeyAuth: []
       properties:
         x-access-token:
           type: string
@@ -165,21 +165,46 @@ paths:
   /api/services/orders:
     get:
       summary: "Example get CRUD service"
+      parameters:
+        - in: header
+          name: x-access-token
+          description: "x-access-token"
+          required: true
+          schema:
+            type: string
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTY2Mjk2NzgyMCwiZXhwIjoxNjYyOTY4NDIwfQ.QB3zKywKoUKjlQ4c1jN1IDyfzc2wUDsvRI6nMkTTRXs"
       tags: [Microservices]
+      # properties:
+      #   x-access-token:
+      #     type: string
+      #     description: "User Auth Token"
+      # example:
+      #   x-access-token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTY2Mjk2NzgyMCwiZXhwIjoxNjYyOTY4NDIwfQ.QB3zKywKoUKjlQ4c1jN1IDyfzc2wUDsvRI6nMkTTRXs"
+      # requestHeader:
+      #   content:
+      #     application/json:
+      #       schema:
+      #         $ref: '#/components/schemas/GetService'
       security:
         - ApiKeyAuth: []
-      parameters:
-        name: token
-        in: path
-        description: "x-access-token"
-        required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GetService'
       responses:
         '200':
           description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: "The success auth msg"
+                        example: "Successful login!"
+                      x-access-token:
+                        type: string
+                        description: "Login token"
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTY2Mjk2NzgyMCwiZXhwIjoxNjYyOTY4NDIwfQ.QB3zKywKoUKjlQ4c1jN1IDyfzc2wUDsvRI6nMkTTRXs"
         '500':
           description: "Some server error."
