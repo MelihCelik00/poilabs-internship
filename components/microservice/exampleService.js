@@ -1,10 +1,11 @@
 const exService = (req, res, next) => {
     try {
-        res.status(200).send(`login successful with ${email} and ${password}`)
+        console.log(req.body);
+        res.status(200).json(`login successful for this user!`);
         next();
     } catch (error) {
         console.log(error);
-        res.status(401).send("Not authorized to see this service!!!!!");
+        res.status(401).send(`Not authorized to see this service!!!!! Error: ${error}`);
     }
 }
 

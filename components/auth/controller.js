@@ -9,7 +9,6 @@ const dotenv = require("dotenv").config();
 const auth = require("basic-auth");
 
 const redisClient = require("../redis");
-let expireTime = 60 * 10;  // 10 min by default but can be changed while logging user in
 
 // assigning user to the variable User
 const User = db.users;
@@ -60,20 +59,18 @@ const login = async (req, res) => {
             
             if (isSame) {
                 let accessToken = jwt.sign({ uid: user.id}, process.env.secretKey, {  // if password is same generate a token with the user's id and the secretKey in the env file
-                    expiresIn: expireTime, // can be changed at the top of the code // 1 * 24 * 60 * 60 * 1000,
+                    expiresIn: 60 * 10, // be aware to change it below too (in redis client section)! 
                 });                
-
                 let {password, createdAt, updatedAt, ...rest} = user.dataValues;
                 user.dataValues = rest;
-                user.dataValues.token = accessToken;  // add token as new attribute 
-                
-                // In redis, save token and id in two-way. This simplifies process of tracking the user.
-                redisClient.set(accessToken, `${user.dataValues.id}`);
+                user.dataValues["x-access-token"] = accessToken;  // add token as new attribute 
+
+                redisClient.set(accessToken, `${user.dataValues.id}`);  // In redis, save token and id in two-way. This simplifies process of tracking the user.
                 redisClient.set(`${user.dataValues.id}`, JSON.stringify({
-                            accessToken : accessToken,
-                            expires : expireTime
+                            "x-access-token" : accessToken,
+                            expires : 60 * 10  // 10 min
                     })); // key only can be string.
-                
+                res.header("x-access-token", accessToken)
                 return res.status(200).json(user.dataValues);  // Standard response for successful HTTP request with json response
 
             } else {
