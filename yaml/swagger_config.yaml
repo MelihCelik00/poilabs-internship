@@ -11,94 +11,108 @@ info:
 host: "http://localhost:3000/"
 basePath: "/api-docs"
 components:
-tags:
-- name: "Users"
-  description: "User Auth managing APIs"
-- name: "Microservices"
-  description: "Microservice to test middleware"
-- securitySchemes:
-  - BasicAuth:
-    type: http
-    scheme: basic
-  - ApiKeyAuth:
-    type: apiKey
-    in: header
-    name: x-API-KEY
-schemes:
-- name: "User"
-  type: "object"
-  required:
-    - username
-    - email
-    - password
-  properties:
-    - id:
-      type: integer
-      description: "Auto generated id"
-    - username:
-      type: string
-      description: "Username which is created by the user"
-    - password:
-      type: string
-      description: "User password"
-    - email:
-      type: string
-      description: "Signed email of the user"
-    - createdAt:
-      type: string
-      description: "Auto generated darte that user has signed up"
-    - updatedAt:
-      type: string
-      description: "Automatically updated date if the user information has changed"
-  example:
-    id: 1
-    username: "testuser1"
-    password: "pwd1"
-    email: "testuser@testmail.com"
-    createdAt: "2022-09-05 10:56:33.499+03"
-    updatedAt: "2022-09-05 10:56:33.499+03"
-- name: "Microservice"
-  type: "object"
-- name: "UserSignup"
-  type: "object"
-  required:
-    - username
-    - email
-    - password
-  properties:
-    - username:
-      type: string
-      description: "Username which is created by the user"
-    - password:
-      type: string
-      description: "User password"
-    - email:
-      type: string
-      description: "Signed email of user"
-  example:
-    username: testuser1
-    password: pwd1
-    email: testuser1@testmail.com
-- name: "UserLogin"
-  type: "object"
-  required:
-    - email
-    - password
-  security:
-    - basicAuth: []
-  properties:
-    - email:
-      type: string
-      description: "Signed email of user"
-    - password:
-      type: string
-      description: "User password"
-  example:
-    password: pwd1
-    email: testmail1@testmail.com
+  tags:
+    Users:
+      description: "User Auth managing APIs"
+    Microservices:
+      description: "Microservice to test middleware"
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-API-KEY
+  
+  schemes:
+    User:
+      type: "object"
+      required:
+        - username
+        - email
+        - password
+      properties:
+        id:
+          type: integer
+          description: "Auto generated id"
+        username:
+          type: string
+          description: "Username which is created by the user"
+        password:
+          type: string
+          description: "User password"
+        email:
+          type: string
+          description: "Signed email of the user"
+        createdAt:
+          type: string
+          description: "Auto generated darte that user has signed up"
+        updatedAt:
+          type: string
+          description: "Automatically updated date if the user information has changed"
+      example:
+        id: 1
+        username: "testuser1"
+        password: "pwd1"
+        email: "testuser@testmail.com"
+        createdAt: "2022-09-05 10:56:33.499+03"
+        updatedAt: "2022-09-05 10:56:33.499+03"
+
+    UserSignup:
+      type: "object"
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          description: "Username which is created by the user"
+        password:
+          type: string
+          description: "User password"
+        email:
+          type: string
+          description: "Signed email of user"
+      example:
+        username: testuser1
+        password: pwd1
+        email: testuser1@testmail.com
+
+    UserLogin:
+      type: "object"
+      required:
+        - email
+        - password
+      security:
+        - basicAuth: []
+      properties:
+        email:
+          type: string
+          description: "Signed email of user"
+        password:
+          type: string
+          description: "User password"
+      example:
+        email: testmail1@testmail.com
+        password: pwd1
+
+    GetService:
+      type: "object"
+      required:
+        - x-access-token
+      security:
+        basicAuth: []
+      properties:
+        x-access-token:
+          type: string
+          description: "User Auth Token"
+      example:
+        x-access-token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEsImlhdCI6MTY2Mjk2NzgyMCwiZXhwIjoxNjYyOTY4NDIwfQ.QB3zKywKoUKjlQ4c1jN1IDyfzc2wUDsvRI6nMkTTRXs"
 security:
-- basicAuth: []
-- ApiKeyAuth: []
+  basicAuth: []
+  ApiKeyAuth: []
 #------------------------------------
 paths:
   /api/users/signup:
@@ -130,32 +144,40 @@ paths:
         - basicAuth: []
         - ApiKeyAuth: []
       requestBody:
-        description: "describe req body"
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemes/UserLogin'
-        responses:
-          '200':
-            description: "The user login successfully"
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemes/UserLogin'
-          '500':
-            description: "Some server error"
-#------------------------------------
-  /api/services/orders:
-      get:
-          summary: "Example get CRUD service"
-          tags: [Microservices]
+
+      responses:
+        '200':
+          description: "The user login successfully"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemes/Microservice'
-          responses:
-            '200':
-              description: "Successful operation"
-            '500':
-              description: "Some server error."
+                $ref: '#/components/schemes/UserLogin'
+        '500':
+          description: "Some server error"
+#------------------------------------
+  /api/services/orders:
+    get:
+      summary: "Example get CRUD service"
+      tags: [Microservices]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        name: token
+        in: path
+        description: "x-access-token"
+        required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemes/GetService'
+      responses:
+        '200':
+          description: "Successful operation"
+        '500':
+          description: "Some server error."
