@@ -6,8 +6,10 @@ var logger = require('morgan');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSdoc = require('swagger-jsdoc')
+const yamljs = require("yamljs")
 
 const bodyParser = require("body-parser");
+
 
 // get router methods with require
 const indexRouter = require('./routes/index');
@@ -33,20 +35,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.urlencoded({
-    extended: true,
+	extended: true,
 }));
 app.use(bodyParser.json());
 
 const options = {
-    definition: {
-        openapi: '3.0.0',
+	definition: {
+		openapi: '3.0.0',
         info: {
-            title: 'Node JS API Project for Express',
+			title: 'Node JS API Project for Express',
             version: '1.0.0'
         },
         servers: [
-            {
-              url: 'http://localhost:3000/'    
+			{
+				url: 'http://localhost:3000/'    
             }
         ]
     },
@@ -65,8 +67,11 @@ const swaggerAuthOptions = {
 		}
 	}
 }
+
+const swaggerDocument = yamljs.load('./yaml/swagger_config.yaml')
+
 const swaggerSpec = swaggerJSdoc(options);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerAuthOptions));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 app.use('/', indexRouter);
