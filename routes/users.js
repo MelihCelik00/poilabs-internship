@@ -134,7 +134,7 @@ router.post('/signup/', userAuth.saveUser, signup);
 //  *      post:
 //  *          summary: Log in existing user
 //  *          tags: [Users]
-//  *          security: 
+//  *          security:
 //  *              - basicAuth: []
 //  *              - ApiKeyAuth: []
 //  *          requestBody:

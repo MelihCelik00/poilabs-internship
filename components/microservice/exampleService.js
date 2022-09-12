@@ -1,7 +1,11 @@
 const exService = (req, res, next) => {
     try {
-        console.log(req.body);
-        res.status(200).json(`login successful for this user!`);
+        console.log("Req body ", req.headers["x-access-token"]);
+
+        res.status(200).json({
+            "message": "Order successful!",
+            "x-access-token": req.headers["x-access-token"]
+        });
         next();
     } catch (error) {
         console.log(error);

@@ -53,7 +53,7 @@ const options = {
             }
         ]
     },
-    apis: [`${__dirname}/routes/users.js`]
+    apis: [`${__dirname}/routes/*.js`]
 };
 
 const swaggerAuthOptions = {
@@ -72,7 +72,7 @@ const swaggerAuthOptions = {
 const swaggerDocument = yamljs.load('./yaml/swagger_config.yaml')
 
 const swaggerSpec = swaggerJSdoc(options);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerAuthOptions));
 
 
 app.use('/', indexRouter);
