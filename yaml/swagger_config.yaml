@@ -20,10 +20,14 @@ components:
     basicAuth:
       type: http
       scheme: basic
-    ApiKeyAuth:
+    bearerAuth:
       type: apiKey
       in: header
-      name: x-access-token
+      bearerFormat: x-access-token
+    # ApiKeyAuth:
+    #   type: apiKey
+    #   in: header
+    #   name: x-access-token
   
   schemas:
     User:
@@ -103,7 +107,7 @@ components:
       required:
         - x-access-token
       security:
-        - ApiKeyAuth: []
+        - bearerAuth: []
       properties:
         x-access-token:
           type: string
@@ -114,6 +118,7 @@ components:
 security:
   - basicAuth: []
   - ApiKeyAuth: []
+  - bearerAuth: []
 
 #------------------------------------
 paths:
@@ -144,7 +149,6 @@ paths:
       tags: [Users]
       security:
         - basicAuth: []
-        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -165,6 +169,8 @@ paths:
   /api/services/orders:
     get:
       summary: "Example get CRUD service"
+      security:
+        - bearerAuth: [x-access-token]
       parameters:
         - in: header
           type: apiKey
@@ -173,11 +179,9 @@ paths:
           required: true
           schema:
             type: string
-            example: ApiKeyAuth
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjEyLCJpYXQiOjE2NjMwNTQ2NDMsImV4cCI6MTY2MzA1NTI0M30.4DaSUIEsbIwDagBA7SQyEh1_BnR5D1d2OaVYwrALtS8"
       tags: [Microservices]
      
-      security:
-        - ApiKeyAuth: []
       responses:
         '200':
           description: "Successful operation"
