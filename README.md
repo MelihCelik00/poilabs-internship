@@ -48,6 +48,7 @@ After downloading project to your local machine, you can just send requests to t
 - [PostgreSQL](https://www.postgresql.org/) - Database
 - [Express](https://expressjs.com/) - Server Framework
 - [NodeJs](https://nodejs.org/en/) - Server Environment
+- [Redis](https://redis.io/)
 
 ## ✍️ Author <a name = "authors"></a>
 
